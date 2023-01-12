@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 public class PluginListParser {
-    public void parse()
+    public void parse() throws InvalidFileTypeException
     {
         try {
             File file = new File("C:/Users/Björn/AppData/Local/Skyrim Special Edition/loadorder.txt");
@@ -25,7 +25,7 @@ public class PluginListParser {
             if (!file2.canRead()) {
                 return;
             }
-            BigInteger offset = BigInteger.ZERO;
+            BigInteger espOffset = BigInteger.ZERO;
             BigInteger increment = new BigInteger("16777216");
             BigInteger eslOffset = new BigInteger("4261412864");
             BigInteger eslIncrement = new BigInteger("4096");
@@ -39,20 +39,25 @@ public class PluginListParser {
                     if (!line.endsWith(".esm") && !plugins.contains("*" + line)) {
                         continue;
                     }
-                    boolean isESL = line.endsWith(".esl");
-                    File dataFile = new File("C:/Program Files (x86)/Steam/steamapps/common/Skyrim Special Edition/Data/" + line);
-                    if (!isESL) {
-                        byte[] data = FileUtils.readFileToByteArray(dataFile);
-                        isESL = ((data[9] >> 1) & 1) == 1;
-                    }
-                    if (isESL) {
-                        loadOrder.add(new GameContentFile(line, loadOrder.size(), eslOffset));
+                    GameContentFile gcf = new GameContentFile(line, loadOrder.size());
+                    loadOrder.add(gcf);
+                    gcf.esm = line.endsWith(".esl");
+                    gcf.esm = line.endsWith(".esm");
+                    parser.es().parse(
+                        FileUtils.openInputStream(
+                            new File("C:/Program Files (x86)/Steam/steamapps/common/Skyrim Special Edition/Data/" + line)
+                        ),
+                        gcf,
+                        patch,
+                        failures,
+                        eslOffset,
+                        espOffset
+                    );
+                    if (gcf.esl) {
                         eslOffset = eslOffset.add(eslIncrement);
                     } else {
-                        loadOrder.add(new GameContentFile(line, loadOrder.size(), offset));
-                        offset = offset.add(increment);
+                        espOffset = espOffset.add(increment);
                     }
-                    parser.es().run(dataFile, patch, failures);
                 }
             }
         } catch (IOException ex) {

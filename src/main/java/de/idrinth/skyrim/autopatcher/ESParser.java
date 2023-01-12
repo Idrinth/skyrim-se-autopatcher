@@ -5,15 +5,24 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.List;
 
-public class ESParser extends AbstractFileParser
+public class ESParser
 {
-    @Override
-    protected void parse(InputStream data, FormMap output, List<ParseException> failures) {
+    protected void parse(InputStream data, GameContentFile file, FormMap output, List<ParseException> failures, BigInteger eslOffset, BigInteger espOffset) throws InvalidFileTypeException {
         try {
-            System.out.println("File-Type: " + (char)data.read() + (char)data.read() + (char)data.read() + (char)data.read());
+            String filetype = String.valueOf((char)data.read() + (char)data.read() + (char)data.read() + (char)data.read());
+            if("TES4".equals(filetype)) {
+                throw new InvalidFileTypeException(filetype + " is not supported");
+            }
             System.out.println("Data-Size: " + data.read());
             data.skip(4);
-            System.out.println("File-Flags: " + data.read());
+            int flags = data.read();
+            if (((flags >> 1) & 1) == 1) {
+                file.esl = true;
+            }
+            if (((flags >> 1) & 1) == 1) {
+                file.esm = true;
+            }
+            file.offset = file.esl ? eslOffset : espOffset;
             data.skip(27);
             BigInteger nextId = BigInteger.ZERO;
             BigInteger multiplier = BigInteger.valueOf(256);

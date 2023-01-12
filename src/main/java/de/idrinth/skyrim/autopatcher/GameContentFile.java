@@ -8,16 +8,17 @@ public class GameContentFile
 {
     public final int loadOrder;
     public final String name;
-    public final BigInteger offset;
+    public BigInteger offset;
     public final List<Master> masters;
+    public boolean esm;
+    public boolean esl;
     private String padLeft(String s) {
         return String.format("%8s", s).replaceAll(" ", "0");  
     }
-    public GameContentFile(String name, int loadOrder, BigInteger offset)
+    public GameContentFile(String name, int loadOrder)
     {
         this.name = name;
         this.loadOrder = loadOrder;
-        this.offset = offset;
         this.masters = new ArrayList<>();
     }
     public String toString()
