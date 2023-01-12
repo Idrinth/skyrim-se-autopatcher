@@ -8,7 +8,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 public class PluginListParser {
-    public void parse() throws InvalidFileTypeException
+    public void parse()
     {
         try {
             File file = new File("C:/Users/Björn/AppData/Local/Skyrim Special Edition/loadorder.txt");
@@ -60,7 +60,7 @@ public class PluginListParser {
                     }
                 }
             }
-        } catch (IOException ex) {
+        } catch (IOException|InvalidFileTypeException ex) {
             return;
         }
     }

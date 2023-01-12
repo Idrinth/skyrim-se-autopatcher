@@ -34,9 +34,19 @@ public class ESParser
                 nextId = nextId.multiply(multiplier).add(BigInteger.valueOf(data.read()));
             }
             System.out.println("Next-ID: " + nextId.toString(16));
+            until("MAST", data);//skip to the master file, likely a bad idea
         } catch (IOException ex) {
             return;
         }
     }
-
+    private void until(String key, InputStream stream) throws IOException
+    {
+        String prev = "";
+        for (int i=0; i<key.length();i++) {
+            prev = prev + (char) stream.read();
+        }
+        while (!prev.equals(key)) {
+            prev = prev.substring(1) + (char) stream.read();
+        }
+    }
 }
