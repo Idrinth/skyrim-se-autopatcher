@@ -12,6 +12,7 @@ public class GameContentFile
     public final List<Master> masters;
     public boolean esm;
     public boolean esl;
+    public boolean localized;
     private String padLeft(String s) {
         return String.format("%8s", s).replaceAll(" ", "0");  
     }

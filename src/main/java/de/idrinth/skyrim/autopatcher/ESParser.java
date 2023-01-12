@@ -14,13 +14,17 @@ public class ESParser
                 throw new InvalidFileTypeException(filetype + " is not supported");
             }
             System.out.println("Data-Size: " + data.read());
-            data.skip(4);
-            int flags = data.read();
-            if (((flags >> 1) & 1) == 1) {
-                file.esl = true;
+            data.skip(3);
+            int flags1 = data.read();
+            if (((flags1 >> 7) & 1) == 1) {
+                file.localized = true;
             }
-            if (((flags >> 1) & 1) == 1) {
+            if ((flags1 & 1) == 1) {
                 file.esm = true;
+            }
+            int flags2 = data.read();
+            if (((flags2 >> 1) & 1) == 1) {
+                file.esl = true;
             }
             file.offset = file.esl ? eslOffset : espOffset;
             data.skip(27);
