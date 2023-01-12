@@ -11,14 +11,14 @@ public class PluginListParser {
     public void parse()
     {
         try {
-            File file = new File("C:/Users/Björn/AppData/Local/Skyrim Special Edition/loadorder.txt");
+            File file = new File(System.getProperty("user.home") + "/AppData/Local/Skyrim Special Edition/loadorder.txt");
             if (!file.isFile()) {
                 return;
             }
             if (!file.canRead()) {
                 return;
             }
-            File file2 = new File("C:/Users/Björn/AppData/Local/Skyrim Special Edition/plugins.txt");
+            File file2 = new File(System.getProperty("user.home") + "AppData/Local/Skyrim Special Edition/plugins.txt");
             if (!file2.isFile()) {
                 return;
             }
@@ -34,6 +34,7 @@ public class PluginListParser {
             List<ParseException> failures = new ArrayList<>();
             List<String> plugins = FileUtils.readLines(file2, "utf8");
             ParserFactory parser = new ParserFactory();
+            File base = new File(WindowsRegistry.readRegistry("HKLM\\SOFTWARE\\WOW6432Node\\Bethesda Softworks\\Skyrim Special Edition", "installed path"));
             for (String line : FileUtils.readLines(file, "utf8")) {
                 if (!line.startsWith("#")) {
                     if (!line.endsWith(".esm") && !plugins.contains("*" + line)) {
@@ -44,9 +45,7 @@ public class PluginListParser {
                     gcf.esm = line.endsWith(".esl");
                     gcf.esm = line.endsWith(".esm");
                     parser.es().parse(
-                        FileUtils.openInputStream(
-                            new File("C:/Program Files (x86)/Steam/steamapps/common/Skyrim Special Edition/Data/" + line)
-                        ),
+                        FileUtils.openInputStream(new File(base + "/Data/" + line)),
                         gcf,
                         patch,
                         failures,

@@ -3,7 +3,9 @@ package de.idrinth.skyrim.autopatcher;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ESParser
 {
@@ -34,15 +36,15 @@ public class ESParser
                 nextId = nextId.multiply(multiplier).add(BigInteger.valueOf(data.read()));
             }
             System.out.println("Next-ID: " + nextId.toString(16));
-            until("MAST", data);//skip to the master file, likely a bad idea
+            next("MAST", data);//skip to the master file, likely a bad idea
         } catch (IOException ex) {
             return;
         }
     }
-    private void until(String key, InputStream stream) throws IOException
+    private void next(String key, InputStream stream) throws IOException
     {
         String prev = "";
-        for (int i=0; i<key.length();i++) {
+        for (int i=0; i<4;i++) {
             prev = prev + (char) stream.read();
         }
         while (!prev.equals(key)) {
