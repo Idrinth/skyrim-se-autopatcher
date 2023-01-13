@@ -8,22 +8,23 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 public class PluginListParser {
-    public void parse()
+    public FormMap parse()
     {
         try {
-            File file = new File(System.getProperty("user.home") + "/AppData/Local/Skyrim Special Edition/loadorder.txt");
+            File config = new File(System.getProperty("user.home") + "/AppData/Local/Skyrim Special Edition");
+            File file = new File(config + "/loadorder.txt");
             if (!file.isFile()) {
-                return;
+                return null;
             }
             if (!file.canRead()) {
-                return;
+                return null;
             }
-            File file2 = new File(System.getProperty("user.home") + "AppData/Local/Skyrim Special Edition/plugins.txt");
+            File file2 = new File(config + "/plugins.txt");
             if (!file2.isFile()) {
-                return;
+                return null;
             }
             if (!file2.canRead()) {
-                return;
+                return null;
             }
             BigInteger espOffset = BigInteger.ZERO;
             BigInteger increment = new BigInteger("16777216");
@@ -38,6 +39,9 @@ public class PluginListParser {
             for (String line : FileUtils.readLines(file, "utf8")) {
                 if (!line.startsWith("#")) {
                     if (!line.endsWith(".esm") && !plugins.contains("*" + line)) {
+                        continue;
+                    }
+                    if (line.startsWith("IdrinthAutoPatch")) {
                         continue;
                     }
                     GameContentFile gcf = new GameContentFile(line, loadOrder.size());
@@ -59,8 +63,9 @@ public class PluginListParser {
                     }
                 }
             }
+            return patch;
         } catch (IOException|InvalidFileTypeException ex) {
-            return;
+            return null;
         }
     }
 }
